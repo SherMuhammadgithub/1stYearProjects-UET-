@@ -1,5 +1,5 @@
-#include <iostream>
-#include <windows.h>
+#include <iostream>  // comma separation to user name , cards type and account type has to be done
+#include <windows.h> // separation of File
 #include <string>
 #include <iomanip>
 #include <cstdlib>
@@ -11,6 +11,8 @@
 using namespace std;
 HANDLE consoleHandle;
 int validationCheck(string, int, int);
+bool commaCheck(string);
+string validationForString(string, string, int, int);
 // loading headers
 void userPannelLoader();
 void startingLoader();
@@ -58,6 +60,10 @@ void updateNotifications(string[], float[]);
 void saveData(string userName[], string userPassword[], string DOB[], string addressOfUser[], string accountType[], string cardsOption[], int intialDeposite[], int monthlySalary[], int loanApplied[], int depositeHistory[], int withrawalHistory[], int fundsHistory[], float interestRate[], int userCount);
 void loadData(string userName[], string userPassword[], string DOB[], string addressOfUser[], string accountType[], string cardsOption[], int intialDeposite[], int monthlySalary[], int loanApplied[], int depositeHistory[], int withrawalHistory[], int fundsHistory[], float interestRate[], int &userCount);
 string readField(string line, int field);
+void saveBankNotes(string notes[]);
+void loadBankNotes(string notes[]);
+void saveAdminData(int[], int[], int[], int &);
+void loadAdminData(int[], int[], int[], int &);
 /// *** format password
 string getAnonymousPass();
 main()
@@ -78,6 +84,8 @@ main()
     int userCount = 0, particularUserCount, couterToTransaction = 0;
     int counts = 0;
     loadData(userName, userPassword, DOB, addressOfUser, accountType, cardsOption, intialDeposite, monthlySalary, loanApplied, depositeHistory, withrawalHistory, fundsHistory, interestRate, userCount);
+    loadBankNotes(notes);
+    loadAdminData(depositeHistory, withrawalHistory, fundsHistory, couterToTransaction);
     consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
     startingLoader();
     Sleep(3000);
@@ -86,6 +94,7 @@ start:
     {
 
         system("cls");
+        header();
         string option = MainMenu();
 
         if (option == "1")
@@ -164,7 +173,7 @@ start:
                         }
                         else
                         {
-                            gotoxy(74, 38);
+                            gotoxy(74, 39);
                             cout << "Enter a valid option!";
                         }
                         char ch;
@@ -304,6 +313,8 @@ start:
         {
             system("cls");
             saveData(userName, userPassword, DOB, addressOfUser, accountType, cardsOption, intialDeposite, monthlySalary, loanApplied, depositeHistory, withrawalHistory, fundsHistory, interestRate, userCount);
+            saveBankNotes(notes);
+            saveAdminData(depositeHistory, withrawalHistory, fundsHistory, couterToTransaction);
             exit(0);
         }
         else
@@ -537,17 +548,21 @@ bool signUp(string userName[], string userPass[], string dateOfBirth[], string a
     string user;
     cin.ignore();
     gotoxy(76, 26);
-    cout << "Full Name: ";
-    getline(cin, userName[userCount]);
-    gotoxy(76, 28);
-    cout << "Date of Birth: ";
-    getline(cin, dateOfBirth[userCount]);
-    gotoxy(76, 30);
-    cout << "Address: ";
-    getline(cin, addressOfUsers[userCount]);
-    gotoxy(76, 32);
-    cout << "Password: ";
-    userPass[userCount] = getAnonymousPass();
+    // cout << "Full Name: ";
+    // getline(cin, userName[userCount]);
+    userName[userCount] = validationForString(userName[userCount], "Full Name: ", 76, 26);
+    // gotoxy(76, 28);
+    // cout << "Date of Birth: ";
+    // getline(cin, dateOfBirth[userCount]);
+    dateOfBirth[userCount] = validationForString(dateOfBirth[userCount], "Date of Birth: ", 76, 28);
+    // gotoxy(76, 30);
+    // cout << "Address: ";
+    // getline(cin, addressOfUsers[userCount]);
+    addressOfUsers[userCount] = validationForString(addressOfUsers[userCount], "Address: ", 76, 30);
+    // gotoxy(76, 32);
+    // cout << "Password: ";
+    // userPass[userCount] = getAnonymousPass();
+    userPass[userCount] = validationForString(userPass[userCount], "Password: ", 76, 32);
     user = userName[userCount];
     pass = userPass[userCount];
     bool flag;
@@ -668,7 +683,7 @@ string MainMenuForUser(string notes[], string accountType[], string userName[], 
 // user F4
 void userInformation(string userName[], string DOB[], string userPassword[], string addressOfUser[], int &particularUserCount)
 {
-    header();
+    // header();
     SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN);
     gotoxy(65, 10);
     cout << "+-+ +-+ +-+ +-+   +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
@@ -728,7 +743,7 @@ start:
             system("cls");
             goto start;
         }
-        gotoxy(73, 38);
+        gotoxy(73, 28);
         cout << "Cards Options(d for Debit or c for Credit): ";
         cin >> card;
         if (card == "d")
@@ -749,31 +764,8 @@ start:
             system("cls");
             goto start;
         }
-        gotoxy(73, 30);
-        cout << "Monthly Salary: $";
-        if (!(cin >> monthlySalary[particularUserCount]))
-        {
-            gotoxy(73, 38);
-            cout << "Enter a valid option!" << endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            Sleep(1000);
-            system("cls");
-            goto start;
-        }
-        gotoxy(73, 32);
-        cout << "Intial Deposite: $";
-
-        if (!(cin >> intialDeposite[particularUserCount]))
-        {
-            gotoxy(73, 38);
-            cout << "Enter a valid option!" << endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            Sleep(1000);
-            system("cls");
-            goto start;
-        }
+        monthlySalary[particularUserCount] = validationCheck("Monthly Salary: $", 73, 30);
+        intialDeposite[particularUserCount] = validationCheck("Intial Deposite: $", 73, 32);
     }
     return flag;
 }
@@ -1101,14 +1093,11 @@ void changePassword(string userPassword[], int &particularUserCount)
     boxContainer();
     gotoxy(74, 26);
     cout << "Prevoius PIN: " << userPassword[particularUserCount];
+    cin.ignore();
     string newPass;
-    gotoxy(74, 28);
-    cout << "Enter New PIN: ";
-    cin >> newPass;
+    newPass = validationForString(newPass, "Enter New PIN: ", 74, 28);
     string confirmPass;
-    gotoxy(74, 30);
-    cout << "Confirm new PIN: ";
-    cin >> confirmPass;
+    confirmPass = validationForString(confirmPass, "Confirm new PIN: ", 74, 30);
     if (newPass == confirmPass)
     {
         gotoxy(74, 33);
@@ -1654,20 +1643,16 @@ void changePasswordForAdmin(string userPassword[])
     adminHeader();
     boxContainer();
     string pass;
+    cin.ignore();
     gotoxy(74, 26);
     cout << "Enter your password: ";
-    cin.ignore();
     getline(cin, pass);
     if (pass == userPassword[0])
     {
-        gotoxy(74, 28);
         string newPassword;
-        cout << "Enter your new Password: ";
-        getline(cin, newPassword);
+        newPassword = validationForString(newPassword, "Enter New PIN: ", 74, 28);
         string confirmPassword;
-        gotoxy(74, 30);
-        cout << "Confirm Password: ";
-        getline(cin, confirmPassword);
+        confirmPassword = validationForString(confirmPassword, "Confirm new PIN: ", 74, 30);
         if (newPassword == confirmPassword)
         {
             gotoxy(74, 32);
@@ -1781,10 +1766,7 @@ void updateInterestRates(float interestRate[])
     gotoxy(74, 26);
     cout << "Previous Interest Rate: " << interestRate[0] << "%" << endl;
     prevRate = interestRate[0];
-    float newRate;
-    gotoxy(74, 28);
-    cout << "Enter the new Rate: ";
-    cin >> newRate;
+    int newRate = validationCheck("Enter the new Rate: ", 74, 28);
     interestRate[0] = newRate;
     gotoxy(74, 30);
     SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
@@ -1856,11 +1838,8 @@ void updateNotifications(string notes[], float interestRate[])
     int option = showAllNotes(notes);
     if (option == 1)
     {
-        gotoxy(74, 38);
-        cout << "Enter new Note: ";
         cin.ignore();
-        getline(cin, newNote);
-        notes[0] = newNote;
+        notes[0] = validationForString(newNote, "Enter new Note: ", 74, 38);
         gotoxy(74, 39);
         SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
         cout << "Note changes successfully!";
@@ -1877,22 +1856,16 @@ void updateNotifications(string notes[], float interestRate[])
     }
     else if (option == 3)
     {
-        gotoxy(74, 38);
-        cout << "Enter new Note: ";
         cin.ignore();
-        getline(cin, newNote);
-        notes[2] = newNote;
+        notes[2] = validationForString(newNote, "Enter new Note: ", 74, 38);
         gotoxy(74, 39);
         SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
         cout << "Note changes successfully!";
     }
     else if (option == 4)
     {
-        gotoxy(74, 38);
-        cout << "Enter new Note: ";
         cin.ignore();
-        getline(cin, newNote);
-        notes[3] = newNote;
+        notes[3] = validationForString(newNote, "Enter new Note: ", 74, 38);
         gotoxy(74, 39);
         SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
         cout << "Note changes successfully!";
@@ -1977,7 +1950,7 @@ void loadData(string userName[], string userPassword[], string DOB[], string add
         depositeHistory[i] = strToInt(readField(line, 10));
         withrawalHistory[i] = strToInt(readField(line, 11));
         fundsHistory[i] = strToInt(readField(line, 12));
-        interestRate[i] = stof(readField(line, 13));
+        interestRate[i] = strToInt(readField(line, 13));
         i++;
     }
     userCount = i;
@@ -2025,4 +1998,104 @@ start:
         cout << string(12, ' '); // Overwrite the error message with spaces to hide it
         goto start;
     }
+}
+bool commaCheck(string option)
+{
+    for (int i = 0; option[i] != '\0'; i++)
+    {
+        if (option[i] == ',')
+        {
+            return false;
+            break;
+        }
+    }
+    return true;
+}
+string validationForString(string option, string input, int x, int y)
+{
+start:
+    gotoxy(x, y);
+    cout << input;
+    getline(cin, option);
+    if (commaCheck(option))
+    {
+        return option;
+    }
+    else
+    {
+        gotoxy(74, 39);
+        cout << "Comma is not allowed!" << endl;
+        Sleep(2000);
+        gotoxy(74, 39);
+        cout << string(22, ' ');
+        goto start;
+    }
+}
+
+// saving bank notification
+void saveBankNotes(string notes[])
+{
+    ofstream file;
+    file.open("notifications.txt");
+    for (int i = 0; i < 4; i++)
+    {
+        file << notes[i];
+        if (i != 3)
+        {
+            file << endl;
+        }
+    }
+    file.close();
+}
+// loading Bank notification
+void loadBankNotes(string notes[])
+{
+    string line;
+    ifstream file;
+    file.open("notifications.txt");
+    int i = 0;
+    while (!file.eof())
+    {
+        getline(file, line);
+        notes[i] = line;
+        i++;
+    }
+}
+
+void saveAdminData(int depositeHistory[], int withrawalHistory[], int fundsHistory[], int &counterToTransaction)
+{
+    ofstream file;
+    file.open("adminData.txt");
+    for (int i = 0; i < 100; i++)
+    {
+
+        file << depositeHistory[i] << "," << withrawalHistory[i] << "," << fundsHistory[i];
+        if (i != 99)
+        {
+            file << endl;
+        }
+    }
+    file.close();
+}
+void loadAdminData(int depositeHistory[], int withrawalHistory[], int fundsHistory[], int &counterToTransaction)
+{
+    string line;
+    ifstream file;
+    file.open("adminData.txt");
+    int i = 0;
+    bool flag = false;
+    while (!file.eof())
+    {
+        getline(file, line);
+        if (!flag)
+        {
+            flag = true;
+            continue;
+        }
+        depositeHistory[i] = strToInt(readField(line, 1));
+        withrawalHistory[i] = strToInt(readField(line, 2));
+        fundsHistory[i] = strToInt(readField(line, 3));
+        i++;
+    }
+    counterToTransaction = i;
 }
