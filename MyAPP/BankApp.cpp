@@ -902,6 +902,11 @@ void depositeMoney(string accountType[], int intialDeposite[], int &particularUs
                 cout << "The transaction was declined...";
             }
         }
+        else
+        {
+            gotoxy(74, 36);
+            cout << "Invalid Choice";
+        }
     }
     else
     {
@@ -1068,6 +1073,11 @@ void withdrawMoney(string accountType[], int intialDeposite[], int &particularUs
                 SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_INTENSITY | FOREGROUND_BLUE);
                 cout << "Trasaction not completed..." << endl;
             }
+        }
+        else
+        {
+            gotoxy(74, 36);
+            cout << "Invalid Option";
         }
     }
     else
@@ -1837,10 +1847,7 @@ int showAllNotes(string notes[])
         i++;
         y++;
     }
-    int option;
-    gotoxy(74, y + 2);
-    cout << "Update Notifications(1-4): ";
-    cin >> option;
+    int option = validationCheck("Update Notifications(1-4): ", 74, y + 2);
     return option;
 }
 void updateNotifications(string notes[], float interestRate[])
@@ -1889,6 +1896,11 @@ void updateNotifications(string notes[], float interestRate[])
         gotoxy(74, 39);
         SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
         cout << "Note changes successfully!";
+    }
+    else
+    {
+        gotoxy(74, 36);
+        cout << "Enter a valid Option";
     }
 }
 /// defination of anonymous pass
@@ -2001,7 +2013,7 @@ start:
         cout << "Invalid Argument" << endl;
         Sleep(2000); // Wait for 2 seconds
         gotoxy(74, 39);
-        cout << string(18, ' '); // Overwrite the error message with spaces to hide it 
+        cout << string(18, ' '); // Overwrite the error message with spaces to hide it
         goto start;
     }
     catch (out_of_range)
@@ -2014,5 +2026,3 @@ start:
         goto start;
     }
 }
-
-
