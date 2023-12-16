@@ -16,7 +16,7 @@ string validationForString(string, string, int, int);
 // loading headers
 void userPannelLoader();
 void startingLoader();
-// headers
+// headers of my APP
 int strToInt(string);
 void header();
 void boxContainer();
