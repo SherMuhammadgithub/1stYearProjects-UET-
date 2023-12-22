@@ -10,28 +10,37 @@
 #include <limits>
 using namespace std;
 HANDLE consoleHandle;
+void gotoxy(int, int);
+
+// validation Checks
 int validationCheck(string, int, int);
 bool commaCheck(string);
 string validationForString(string, string, int, int);
+int strToInt(string);
+
 // loading headers
 void userPannelLoader();
 void startingLoader();
+
 // headers of my APP
-int strToInt(string);
 void header();
 void boxContainer();
 void adminHeader();
 void notificationsHeader();
-void gotoxy(int, int);
+
+// Main Menus
 string MainMenuForUser(string[], string[], string[], int &);
 string MainMenuForAdmin();
 string MainMenu();
+
+// User Credentials Check
 bool signUp(string[], string[], string[], string[], int &);
+void accountCreationCheck(string[], string[], int[], int[], int &);
 bool signIn(string[], string[], int &, int &);
+bool accountCreation(string[], string[], int[], int[], int &);
+
 // All functions for User
 void userInformation(string[], string[], string[], string[], int &);
-bool accountCreation(string[], string[], int[], int[], int &);
-void accountCreationCheck(string[], string[], int[], int[], int &);
 void accountInformation(string[], string[], int[], int &);
 int seeOPtions();
 void depositeMoney(string[], int[], int &, int[], int &);
@@ -42,6 +51,7 @@ void zakatDeduction(string[], int[], int &, string[]);
 void transferFunds(string[], int[], int &, int[], int &);
 void applyForLoan(string[], int[], int &, int[], string[]);
 void notifiactions(string[]);
+
 // all funcitons for Admin
 void searchUser(string userName[], string userPassword[], string DOB[], string addressOfUser[], string accountType[], string cardsOption[], int intialDeposite[], int monthlySalary[], int &userCount);
 void viewAllAcounts(string[], int &);
@@ -56,19 +66,19 @@ void updateInterestRates(float[]);
 void transactionHistory(int[], int[], int[], int &);
 int showAllNotes(string[]);
 void updateNotifications(string[], float[]);
+
 // File Handling
 void saveData(string userName[], string userPassword[], string DOB[], string addressOfUser[], string accountType[], string cardsOption[], int intialDeposite[], int monthlySalary[], int loanApplied[], int depositeHistory[], int withrawalHistory[], int fundsHistory[], float interestRate[], int userCount);
 void loadData(string userName[], string userPassword[], string DOB[], string addressOfUser[], string accountType[], string cardsOption[], int intialDeposite[], int monthlySalary[], int loanApplied[], int depositeHistory[], int withrawalHistory[], int fundsHistory[], float interestRate[], int &userCount);
 string readField(string line, int field);
 void saveBankNotes(string notes[]);
 void loadBankNotes(string notes[]);
-void saveAdminData(int[], int[], int[], int &);
-void loadAdminData(int[], int[], int[], int &);
-/// *** format password
-string getAnonymousPass();
+
+/// *** format password (on login screens)
+string passwordFormat();
 main()
 {
-    // all my arrays
+    // Arrays
     string userName[100], userPassword[100], DOB[100], addressOfUser[100], accountType[100], cardsOption[100], notes[100];
     int intialDeposite[100], monthlySalary[100], loanApplied[100], depositeHistory[100], withrawalHistory[100], fundsHistory[100] = {0};
     for (int i = 0; i < 100; i++)
@@ -76,16 +86,16 @@ main()
         accountType[i] = "N/A";
         cardsOption[i] = "N/A";
     }
-    float interestRate[1] = {1.5};
-    notes[0] = {"This is amazing Bank!"};
-    notes[1] = {"Interest Accursed is 1.5%!"};
-    notes[2] = {"Zakat Deduction is 2.5%!"};
-    notes[3] = {"Advanced Security!"};
+    float interestRate[1];
+
+    // counter Vars
     int userCount = 0, particularUserCount, couterToTransaction = 0;
+    // for suspecious activity (after 3 tries)
     int counts = 0;
+    // loading all data
+
     loadData(userName, userPassword, DOB, addressOfUser, accountType, cardsOption, intialDeposite, monthlySalary, loanApplied, depositeHistory, withrawalHistory, fundsHistory, interestRate, userCount);
     loadBankNotes(notes);
-    loadAdminData(depositeHistory, withrawalHistory, fundsHistory, couterToTransaction);
     consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
     startingLoader();
     Sleep(3000);
@@ -276,7 +286,7 @@ start:
                     for (int i = 19; i >= 0; i--)
                     {
                         gotoxy(74, 36);
-                        cout << "\r" << setw(80) << i << " seconds remaining  " << std::flush;
+                        cout << "\r" << setw(80) << i << " seconds remaining  " << flush;
                         Sleep(1000);
                     }
                     counts = 0;
@@ -314,7 +324,7 @@ start:
             system("cls");
             saveData(userName, userPassword, DOB, addressOfUser, accountType, cardsOption, intialDeposite, monthlySalary, loanApplied, depositeHistory, withrawalHistory, fundsHistory, interestRate, userCount);
             saveBankNotes(notes);
-            saveAdminData(depositeHistory, withrawalHistory, fundsHistory, couterToTransaction);
+            // saveAdminData(userName, intialDeposite, userCount);
             exit(0);
         }
         else
@@ -324,151 +334,6 @@ start:
             cout << "Enter a valid option!";
         }
     }
-}
-void startingLoader()
-{
-    system("cls"); // to remove previous content
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_BLUE | FOREGROUND_RED);
-    gotoxy(44, 22);
-    cout << "   ______      __    __           ____       _     __          _______                        _       __";
-    gotoxy(44, 23);
-    cout << "  / ____/___  / /___/ /__  ____  / __ \\_____(_)___/ /__       / ____(_)___  ____ _____  _____(_)___ _/ /";
-    gotoxy(44, 24);
-    cout << " / / __/ __ \\/ / __  / _ \\/ __ \\/ /_/ / ___/ / __  / _ \\     / /_  / / __ \\/ __ `/ __ \\/ ___/ / __ `/ / ";
-    gotoxy(44, 25);
-    cout << "/ /_/ / /_/ / / /_/ /  __/ / / / ____/ /  / / /_/ /  __/    / __/ / / / / / /_/ / / / / /__/ / /_/ / /  ";
-    gotoxy(44, 26);
-    cout << "\\____/\\____/_/\\__,_/\\___/_/ /_/_/   /_/  /_/\\__,_/\\___/    /_/   /_/_/ /_/\\__,_/_/ /_/\\___/_/\\__,_/_/   ";
-}
-void userPannelLoader()
-{
-    gotoxy(75, 25);
-    cout << "    _____  __                    ________                   ______";
-    gotoxy(75, 26);
-    cout << "__  / / /___________________ ___  __ \\_____ _______________  /    ";
-    gotoxy(75, 27);
-    cout << "_  / / /__  ___/  _ \\_  ___/ __  /_/ /  __ `/_  __ \\  _ \\_  /     ";
-    gotoxy(75, 28);
-    cout << "/ /_/ / _(__  )/  __/  /     _  ____// /_/ /_  / / /  __/  /      ";
-    gotoxy(75, 29);
-    cout << "\\____/  /____/ \\___//_/      /_/     \\__,_/ /_/ /_/\\___//_/       ";
-}
-void adminHeader()
-{
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    gotoxy(63, 10);
-    cout << "          _____           ________                   ______                ";
-    gotoxy(63, 11);
-    cout << "___    |_____  /______ ______(_)______    ___  __ \\_____ _______________  /";
-    gotoxy(63, 12);
-    cout << "__  /| |  __  /__  __ `__ \\_  /__  __ \\   __  /_/ /  __ `/_  __ \\  _ \\_  / ";
-    gotoxy(63, 13);
-    cout << "_  ___ / /_/ / _  / / / / /  / _  / / /   _  ____// /_/ /_  / / /  __/  /  ";
-    gotoxy(63, 14);
-    cout << "/_/  |_\\__,_/  /_/ /_/ /_//_/  /_/ /_/    /_/     \\__,_/ /_/ /_/\\___//_/   ";
-}
-void notificationsHeader()
-{
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    gotoxy(152, 8);
-    cout << "ALL NOTIFICATIONS!";
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_RED);
-    gotoxy(140, 10);
-    cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
-    gotoxy(140, 11);
-    cout << "|-| |-| |-| |-| |-| |-| |-| |-| |-| |-| |-|";
-    gotoxy(140, 12);
-    cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
-    gotoxy(140, 13);
-    cout << "+-+                                     +-+";
-    gotoxy(140, 14);
-    cout << "|||                                     |||";
-    gotoxy(140, 15);
-    cout << "+-+                                     +-+";
-    gotoxy(140, 16);
-    cout << "+-+                                     +-+";
-    gotoxy(140, 17);
-    cout << "|||                                     |||";
-    gotoxy(140, 18);
-    cout << "+-+                                     +-+";
-    gotoxy(140, 19);
-    cout << "+-+                                     +-+";
-    gotoxy(140, 20);
-    cout << "|||                                     |||";
-    gotoxy(140, 21);
-    cout << "+-+                                     +-+";
-    gotoxy(140, 22);
-    cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
-    gotoxy(140, 23);
-    cout << "|-| |-| |-| |-| |-| |-| |-| |-| |-| |-| |-|";
-    gotoxy(140, 24);
-    cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
-}
-void boxContainer()
-{
-    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_RED);
-    gotoxy(70, 19);
-    cout << " ***** ***** ***** ***** ***** ***** ***** ***** *****";
-    gotoxy(70, 20);
-    cout << "///// ///// ///// ///// ///// ///// ///// ///// ///// ";
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    gotoxy(70, 21);
-    cout << "                                                      ";
-    gotoxy(70, 22);
-    cout << "                                                      ";
-    gotoxy(70, 23);
-    cout << "                                                      ";
-    gotoxy(70, 24);
-    cout << " *                                                 *  ";
-    gotoxy(70, 25);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 26);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 27);
-    cout << "/                                                 /   ";
-    gotoxy(70, 28);
-    cout << " *                                                 *  ";
-    gotoxy(70, 29);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 30);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 31);
-    cout << "/                                                 /   ";
-    gotoxy(70, 32);
-    cout << " *                                                 *  ";
-    gotoxy(70, 33);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 34);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 35);
-    cout << "/                                                 /   ";
-    gotoxy(70, 36);
-    cout << " *                                                 *  ";
-    gotoxy(70, 37);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 38);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 39);
-    cout << "/                                                 /   ";
-    gotoxy(70, 40);
-    cout << " *                                                 *  ";
-    gotoxy(70, 41);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 42);
-    cout << "/*                                                /*  ";
-    gotoxy(70, 43);
-    cout << "/                                                 /   ";
-    gotoxy(70, 44);
-    cout << "                                                       ";
-    gotoxy(70, 45);
-    cout << "             Project by SM.Tec  Companies              ";
-    gotoxy(70, 46);
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_RED);
-    cout << " ***** ***** ***** ***** ***** ***** ***** ***** *****";
-    gotoxy(70, 47);
-    cout << "///// ///// ///// ///// ///// ///// ///// ///// /////  ";
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 void notifications(string notes[])
 {
@@ -488,21 +353,6 @@ void gotoxy(int x, int y)
     coordinates.X = x;
     coordinates.Y = y;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coordinates);
-}
-void header()
-{
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_RED);
-    gotoxy(72, 2);
-    cout << " ____    _    _   _ _  __     _    ____  ____  " << endl;
-    gotoxy(72, 3);
-    cout << "| __ )  / \\  | \\ | | |/ /    / \\  |  _ \\|  _ \\ " << endl;
-    gotoxy(72, 4);
-    cout << "|  _ \\ / _ \\ |  \\| | ' /    / _ \\ | |_) | |_) |" << endl;
-    gotoxy(72, 5);
-    cout << "| |_) / ___ \\| |\\  | . \\   / ___ \\|  __/|  __/ " << endl;
-    gotoxy(72, 6);
-    cout << "|____/_/   \\_\\_| \\_|_|\\_\\ /_/   \\_\\_|   |_|    " << endl;
-    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 string MainMenu()
 {
@@ -528,10 +378,6 @@ string MainMenu()
     cin >> option;
     return option;
 }
-// HOME PAGE OPTIONS
-void optionCheck(string userName[], string userPassword[], string DOB[], string addressOfUser[], string accountType[], string cardsOption[], int intialDeposite[], int monthlySalary[], int &userCount, int &particularUserCount, int loanApplied[], string notes[], float interestRate[], int depositeHistory[], int withrawalHistory[], int fundsHistory[], int &couterToTransaction, int &counts)
-{
-}
 bool signUp(string userName[], string userPass[], string dateOfBirth[], string addressOfUsers[], int &userCount)
 {
     system("cls");
@@ -548,20 +394,9 @@ bool signUp(string userName[], string userPass[], string dateOfBirth[], string a
     string user;
     cin.ignore();
     gotoxy(76, 26);
-    // cout << "Full Name: ";
-    // getline(cin, userName[userCount]);
     userName[userCount] = validationForString(userName[userCount], "Full Name: ", 76, 26);
-    // gotoxy(76, 28);
-    // cout << "Date of Birth: ";
-    // getline(cin, dateOfBirth[userCount]);
     dateOfBirth[userCount] = validationForString(dateOfBirth[userCount], "Date of Birth: ", 76, 28);
-    // gotoxy(76, 30);
-    // cout << "Address: ";
-    // getline(cin, addressOfUsers[userCount]);
     addressOfUsers[userCount] = validationForString(addressOfUsers[userCount], "Address: ", 76, 30);
-    // gotoxy(76, 32);
-    // cout << "Password: ";
-    // userPass[userCount] = getAnonymousPass();
     userPass[userCount] = validationForString(userPass[userCount], "Password: ", 76, 32);
     user = userName[userCount];
     pass = userPass[userCount];
@@ -607,7 +442,7 @@ bool signIn(string userName[], string userPass[], int &particularUserCount, int 
     getline(cin, UserN);
     gotoxy(76, 28);
     cout << "User Password: ";
-    password = getAnonymousPass();
+    password = passwordFormat();
     for (particularUserCount = 0; particularUserCount <= userCount; particularUserCount++)
     {
         if (userName[particularUserCount] == UserN && userPass[particularUserCount] == password)
@@ -819,9 +654,26 @@ void accountInformation(string accountType[], string cardsOption[], int intialDe
              << endl;
     }
 }
+
+// options for withdraw and deposit Money (ATM approach)
+int seeOPtions()
+{
+    gotoxy(74, 26);
+    cout << "a.500 " << setw(20) << "b.1000" << endl;
+    gotoxy(74, 28);
+    cout << "c.1500" << setw(20) << "d.2000" << endl;
+    gotoxy(74, 30);
+    cout << "o.Other Amount" << endl;
+    gotoxy(74, 33);
+    char option;
+    cout << "Enter your option: ";
+    cin >> option;
+    return option;
+}
 // user F2
 void depositeMoney(string accountType[], int intialDeposite[], int &particularUserCount, int depositeHistory[], int &counterToTransaction)
 {
+    header();
     SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN);
     gotoxy(71, 10);
     cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+   +-+ +-+ +-+ +-+ +-+";
@@ -906,21 +758,6 @@ void depositeMoney(string accountType[], int intialDeposite[], int &particularUs
              << endl;
     }
 }
-int seeOPtions()
-{
-    gotoxy(74, 26);
-    cout << "a.500 " << setw(20) << "b.1000" << endl;
-    gotoxy(74, 28);
-    cout << "c.1500" << setw(20) << "d.2000" << endl;
-    gotoxy(74, 30);
-    cout << "o.Other Amount" << endl;
-    gotoxy(74, 33);
-    char option;
-    cout << "Enter your option: ";
-    cin >> option;
-    return option;
-}
-
 // user f3
 void withdrawMoney(string accountType[], int intialDeposite[], int &particularUserCount, int withdrawalHistory[], int &counterToTransaction)
 {
@@ -1475,7 +1312,6 @@ void deleteAccount(string userName[], string userPassword[], string accountType[
         cout << "Enter the userName to delete!: ";
         cin.ignore();
         getline(cin, valueToDelete);
-        // cin >> valueToDelete;
         int i, j;
         bool flag;
         for (i = 1; i < userCount; ++i)
@@ -1495,9 +1331,6 @@ void deleteAccount(string userName[], string userPassword[], string accountType[
 
                 // Decrease the size of the array
                 --userCount;
-
-                // Exit the loop after deleting the first occurrence (if multiple)
-
                 flag = true;
                 break;
             }
@@ -1877,7 +1710,7 @@ void updateNotifications(string notes[], float interestRate[])
     }
 }
 /// defination of anonymous pass
-string getAnonymousPass()
+string passwordFormat()
 {
     char singleLetter;
     string completeWord;
@@ -1920,7 +1753,7 @@ void saveData(string userName[], string userPassword[], string DOB[], string add
     file.open("datas.txt");
     for (int i = 0; i < userCount; i++)
     {
-        file << userName[i] << "," << userPassword[i] << "," << DOB[i] << "," << addressOfUser[i] << "," << accountType[i] << "," << cardsOption[i] << "," << intialDeposite[i] << "," << monthlySalary[i] << "," << loanApplied[i] << "," << depositeHistory[i] << "," << withrawalHistory[i] << "," << fundsHistory[i] << "," << interestRate[i];
+        file << userName[i] << "," << userPassword[i] << "," << DOB[i] << "," << addressOfUser[i] << "," << accountType[i] << "," << cardsOption[i] << "," << intialDeposite[i] << "," << monthlySalary[i] << "," << loanApplied[i] << "," << interestRate[i];
         if (i != userCount - 1)
         {
             file << endl;
@@ -1947,9 +1780,6 @@ void loadData(string userName[], string userPassword[], string DOB[], string add
         intialDeposite[i] = strToInt(readField(line, 7));
         monthlySalary[i] = strToInt(readField(line, 8));
         loanApplied[i] = strToInt(readField(line, 9));
-        depositeHistory[i] = strToInt(readField(line, 10));
-        withrawalHistory[i] = strToInt(readField(line, 11));
-        fundsHistory[i] = strToInt(readField(line, 12));
         interestRate[i] = strToInt(readField(line, 13));
         i++;
     }
@@ -2060,42 +1890,167 @@ void loadBankNotes(string notes[])
         notes[i] = line;
         i++;
     }
-}
-
-void saveAdminData(int depositeHistory[], int withrawalHistory[], int fundsHistory[], int &counterToTransaction)
-{
-    ofstream file;
-    file.open("adminData.txt");
-    for (int i = 0; i < 100; i++)
-    {
-
-        file << depositeHistory[i] << "," << withrawalHistory[i] << "," << fundsHistory[i];
-        if (i != 99)
-        {
-            file << endl;
-        }
-    }
     file.close();
 }
-void loadAdminData(int depositeHistory[], int withrawalHistory[], int fundsHistory[], int &counterToTransaction)
+
+// ############################### Headers ################################
+void header()
 {
-    string line;
-    ifstream file;
-    file.open("adminData.txt");
-    int i = 0;
-    bool flag = false;
-    while (!file.eof())
-    {
-        getline(file, line);
-        if (!flag)
-        {
-            flag = true;
-            continue;
-        }
-        depositeHistory[i] = strToInt(readField(line, 1));
-        withrawalHistory[i] = strToInt(readField(line, 2));
-        fundsHistory[i] = strToInt(readField(line, 3));
-        i++;
-    }
-    counterToTransaction = i;
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_RED);
+    gotoxy(72, 2);
+    cout << " ____    _    _   _ _  __     _    ____  ____  " << endl;
+    gotoxy(72, 3);
+    cout << "| __ )  / \\  | \\ | | |/ /    / \\  |  _ \\|  _ \\ " << endl;
+    gotoxy(72, 4);
+    cout << "|  _ \\ / _ \\ |  \\| | ' /    / _ \\ | |_) | |_) |" << endl;
+    gotoxy(72, 5);
+    cout << "| |_) / ___ \\| |\\  | . \\   / ___ \\|  __/|  __/ " << endl;
+    gotoxy(72, 6);
+    cout << "|____/_/   \\_\\_| \\_|_|\\_\\ /_/   \\_\\_|   |_|    " << endl;
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+}
+void startingLoader()
+{
+    system("cls"); // to remove previous content
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_BLUE | FOREGROUND_RED);
+    gotoxy(44, 22);
+    cout << "   ______      __    __           ____       _     __          _______                        _       __";
+    gotoxy(44, 23);
+    cout << "  / ____/___  / /___/ /__  ____  / __ \\_____(_)___/ /__       / ____(_)___  ____ _____  _____(_)___ _/ /";
+    gotoxy(44, 24);
+    cout << " / / __/ __ \\/ / __  / _ \\/ __ \\/ /_/ / ___/ / __  / _ \\     / /_  / / __ \\/ __ `/ __ \\/ ___/ / __ `/ / ";
+    gotoxy(44, 25);
+    cout << "/ /_/ / /_/ / / /_/ /  __/ / / / ____/ /  / / /_/ /  __/    / __/ / / / / / /_/ / / / / /__/ / /_/ / /  ";
+    gotoxy(44, 26);
+    cout << "\\____/\\____/_/\\__,_/\\___/_/ /_/_/   /_/  /_/\\__,_/\\___/    /_/   /_/_/ /_/\\__,_/_/ /_/\\___/_/\\__,_/_/   ";
+}
+void userPannelLoader()
+{
+    gotoxy(75, 25);
+    cout << "    _____  __                    ________                   ______";
+    gotoxy(75, 26);
+    cout << "__  / / /___________________ ___  __ \\_____ _______________  /    ";
+    gotoxy(75, 27);
+    cout << "_  / / /__  ___/  _ \\_  ___/ __  /_/ /  __ `/_  __ \\  _ \\_  /     ";
+    gotoxy(75, 28);
+    cout << "/ /_/ / _(__  )/  __/  /     _  ____// /_/ /_  / / /  __/  /      ";
+    gotoxy(75, 29);
+    cout << "\\____/  /____/ \\___//_/      /_/     \\__,_/ /_/ /_/\\___//_/       ";
+}
+void adminHeader()
+{
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    gotoxy(63, 10);
+    cout << "          _____           ________                   ______                ";
+    gotoxy(63, 11);
+    cout << "___    |_____  /______ ______(_)______    ___  __ \\_____ _______________  /";
+    gotoxy(63, 12);
+    cout << "__  /| |  __  /__  __ `__ \\_  /__  __ \\   __  /_/ /  __ `/_  __ \\  _ \\_  / ";
+    gotoxy(63, 13);
+    cout << "_  ___ / /_/ / _  / / / / /  / _  / / /   _  ____// /_/ /_  / / /  __/  /  ";
+    gotoxy(63, 14);
+    cout << "/_/  |_\\__,_/  /_/ /_/ /_//_/  /_/ /_/    /_/     \\__,_/ /_/ /_/\\___//_/   ";
+}
+void notificationsHeader()
+{
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    gotoxy(152, 8);
+    cout << "ALL NOTIFICATIONS!";
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_RED);
+    gotoxy(140, 10);
+    cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
+    gotoxy(140, 11);
+    cout << "|-| |-| |-| |-| |-| |-| |-| |-| |-| |-| |-|";
+    gotoxy(140, 12);
+    cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
+    gotoxy(140, 13);
+    cout << "+-+                                     +-+";
+    gotoxy(140, 14);
+    cout << "|||                                     |||";
+    gotoxy(140, 15);
+    cout << "+-+                                     +-+";
+    gotoxy(140, 16);
+    cout << "+-+                                     +-+";
+    gotoxy(140, 17);
+    cout << "|||                                     |||";
+    gotoxy(140, 18);
+    cout << "+-+                                     +-+";
+    gotoxy(140, 19);
+    cout << "+-+                                     +-+";
+    gotoxy(140, 20);
+    cout << "|||                                     |||";
+    gotoxy(140, 21);
+    cout << "+-+                                     +-+";
+    gotoxy(140, 22);
+    cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
+    gotoxy(140, 23);
+    cout << "|-| |-| |-| |-| |-| |-| |-| |-| |-| |-| |-|";
+    gotoxy(140, 24);
+    cout << "+-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+";
+}
+void boxContainer()
+{
+    HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_RED);
+    gotoxy(70, 19);
+    cout << " ***** ***** ***** ***** ***** ***** ***** ***** *****";
+    gotoxy(70, 20);
+    cout << "///// ///// ///// ///// ///// ///// ///// ///// ///// ";
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+    gotoxy(70, 21);
+    cout << "                                                      ";
+    gotoxy(70, 22);
+    cout << "                                                      ";
+    gotoxy(70, 23);
+    cout << "                                                      ";
+    gotoxy(70, 24);
+    cout << " *                                                 *  ";
+    gotoxy(70, 25);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 26);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 27);
+    cout << "/                                                 /   ";
+    gotoxy(70, 28);
+    cout << " *                                                 *  ";
+    gotoxy(70, 29);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 30);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 31);
+    cout << "/                                                 /   ";
+    gotoxy(70, 32);
+    cout << " *                                                 *  ";
+    gotoxy(70, 33);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 34);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 35);
+    cout << "/                                                 /   ";
+    gotoxy(70, 36);
+    cout << " *                                                 *  ";
+    gotoxy(70, 37);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 38);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 39);
+    cout << "/                                                 /   ";
+    gotoxy(70, 40);
+    cout << " *                                                 *  ";
+    gotoxy(70, 41);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 42);
+    cout << "/*                                                /*  ";
+    gotoxy(70, 43);
+    cout << "/                                                 /   ";
+    gotoxy(70, 44);
+    cout << "                                                       ";
+    gotoxy(70, 45);
+    cout << "             Project by SM.Tec  Companies              ";
+    gotoxy(70, 46);
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_GREEN | FOREGROUND_RED);
+    cout << " ***** ***** ***** ***** ***** ***** ***** ***** *****";
+    gotoxy(70, 47);
+    cout << "///// ///// ///// ///// ///// ///// ///// ///// /////  ";
+    SetConsoleTextAttribute(consoleHandle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
