@@ -5,7 +5,7 @@ void printMatrix(int[][4]);
 main()
 {
     int adjMatrix[4][4] = {
-        {0, 1, 2, 0},
+        {0, 1, 1, 0},
         {1, 0, 0, 1},
         {2, 0, 0, 1},
         {0, 1, 1, 0}};
@@ -26,10 +26,11 @@ main()
 }
 void printMatrix(int matrix[][4])
 {
-    cout << "\t(0)\t(1)\t(2)\t(3)" << endl << endl;
+    cout << "\t(0)\t(1)\t(2)\t(3)" << endl
+         << endl;
     for (int i = 0; i < 4; i++)
     {
-        cout <<"(" << i << ")";
+        cout << "(" << i << ")";
         for (int j = 0; j < 4; j++)
         {
             cout << "\t" << matrix[i][j];
